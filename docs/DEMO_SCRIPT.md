@@ -1,22 +1,25 @@
-# Guion comercial — Demo de 12 minutos
+# 12-minute customer sales demo
 
-## 1. Problema (1 min)
-“No venimos a sustituir tu ERP. Finance AI OS convierte los datos que ya tienes en decisiones accionables sobre caja, DSO, cobro y riesgo.”
+## 0–2 min — The pain
+“Finance AI OS does not replace your ERP. It reads the finance truth already in Odoo and turns it into cash-prioritized decisions.”
 
-## 2. Dashboard (2 min)
-Abrir `http://localhost:8088` y mostrar DSO, AR abierto, vencido y disputas.
+## 2–5 min — CFO Command Center
+Show:
+- AR open
+- DSO
+- overdue
+- 61+ balance
+- dispute exposure
+- aging
 
-## 3. Alertas (3 min)
-Mostrar las cuatro alertas. Explicar que cada alerta tiene impacto económico y acción recomendada.
+## 5–8 min — Ask the agent
+Ask OpenClaw or Hermes:
+“Dame el estado de AR, DSO, aging, top 5 vencidos y riesgo de caja. Explica los tres drivers principales y no ejecutes ninguna acción.”
 
-## 4. Integración Odoo (2 min)
-Abrir `http://localhost:8069`. Mostrar clientes cargados. Volver al dashboard y mostrar el estado de conexión.
+The agent must use MCP tools, not invent figures.
 
-## 5. ROI (2 min)
-Explicar el indicador de working capital liberado al reducir 4 días de DSO y la productividad anual estimada.
+## 8–10 min — Action prioritization
+Show the top overdue customers and cash-recovery candidate pool. Explain that this is a prioritization pool, not a guaranteed forecast.
 
-## 6. Cierre (2 min)
-“En el piloto de 30 días trabajamos primero en modo sombra. Medimos contra tus datos reales y solo automatizamos después de validar impacto y controles.”
-
-### CTA
-Proponer discovery financiero de 45 minutos + export de AR/aging o conexión read-only al ERP.
+## 10–12 min — Pilot offer
+30-day SHADOW/ASSISTED pilot, measured against DSO, overdue, collected cash and finance-team time.

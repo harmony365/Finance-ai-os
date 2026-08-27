@@ -1,9 +1,7 @@
-# OpenClaw
+# OpenClaw integration
 
-Este directorio es un bundle Agent Plugins: `plugin.json` + `skills/` + `mcp.json`.
-
-1. Levanta Finance AI OS y confirma `http://localhost:8090/mcp`.
-2. Instala este directorio/archivo como plugin bundle con tu CLI de OpenClaw.
-3. Reinicia/reload del Gateway.
-4. Verifica que el agente vea solo las herramientas `finance_*` necesarias.
-5. Mantén `SHADOW` para CUSTOMER #001 durante baseline.
+1. Put `finance-mcp` and the `openclaw` container on the same Docker network (`scripts/connect-runtimes.sh`).
+2. Load this runtime's `mcp.json` and `skills/finance-os/SKILL.md` using your OpenClaw plugin/skill deployment method.
+3. MCP URL from the shared Docker network: `http://finance-mcp:8090/mcp`.
+4. Keep Finance AI OS in `SHADOW` and `READ_ONLY=true` for the pilot.
+5. Validate by asking OpenClaw: “Dame el AR, DSO, aging y top 5 vencidos; no ejecutes ninguna acción.”

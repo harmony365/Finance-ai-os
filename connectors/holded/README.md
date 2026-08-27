@@ -1,5 +1,3 @@
-# Holded Connector
+# Holded connector — next adapter
 
-Conector opcional para el segundo ERP. Se activa con `HOLDED_ENABLED=true` y `HOLDED_API_KEY`.
-Durante el piloto el adaptador debe mantenerse en operaciones GET/read-only.
-Los endpoints exactos disponibles deben verificarse contra la documentación de la cuenta Holded del cliente antes del go-live.
+Reserved for the second ERP adapter. Do not enable it in CUSTOMER #001 unless the customer actually uses Holded. Keep the same canonical outputs used by Finance Core: customers, invoices, due dates, residual/open balances and payments.

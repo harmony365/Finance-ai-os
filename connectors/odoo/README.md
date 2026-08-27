@@ -1,8 +1,5 @@
-# Odoo AR Connector
+# Odoo connector
 
-Modo recomendado para CUSTOMER #001: **read-only**.
+CUSTOMER #001's deployed Odoo 19 instance currently works through XML-RPC. Finance Core uses it only for read operations (`search_read`, `fields_get`) during the pilot.
 
-- Demo local: el starter mantiene XML-RPC para comprobar conectividad.
-- Producción Odoo 19 Custom/API: configurar `ODOO_API_KEY` y usar JSON-2.
-- Datos objetivo: `account.move`, `account.payment`, `res.partner` y vencimientos.
-- Nunca se publican, cancelan ni concilian asientos durante SHADOW.
+Odoo 19 deprecates XML-RPC/JSON-RPC in favor of JSON-2. Keep the connector boundary isolated so the transport can be replaced without changing Finance Core/MCP contracts.

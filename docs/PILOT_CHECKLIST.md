@@ -1,13 +1,16 @@
-# Checklist — Primer piloto cliente
-- [ ] Sponsor financiero identificado (CFO/Finance Manager)
-- [ ] Export AR / aging de últimos 6-12 meses
-- [ ] Clientes y límites de crédito
-- [ ] Facturas abiertas y vencidas
-- [ ] Pagos / promesas de pago
-- [ ] Disputas o incidencias
-- [ ] Forecast de caja actual
-- [ ] 3 KPIs baseline acordados
-- [ ] Modo SHADOW aprobado
-- [ ] Reglas de aprobación definidas
-- [ ] Revisión semanal de resultados
-- [ ] Decisión Go/No-Go día 30
+# Pilot checklist
+
+- [ ] Database backup completed
+- [ ] `/web` internal administrator works
+- [ ] Finance Core `/health` green
+- [ ] Finance MCP `/health` green
+- [ ] Odoo invoice count reconciled
+- [ ] AR reconciled within 0.5%
+- [ ] Due dates coverage >=99%
+- [ ] SHADOW mode confirmed
+- [ ] READ_ONLY confirmed
+- [ ] OpenClaw connected to Finance MCP
+- [ ] Hermes connected to Finance MCP
+- [ ] CFO Command Center accessible
+- [ ] CFO baseline signed off
+- [ ] No autonomous financial action enabled

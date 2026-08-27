@@ -1,19 +1,20 @@
-import os, requests
+"""Odoo 19 pilot connector.
 
-class OdooJSON2Client:
-    def __init__(self):
-        self.base=os.getenv("ODOO_URL","http://odoo:8069").rstrip("/")
-        self.db=os.getenv("ODOO_DB","finance_demo")
-        self.key=os.getenv("ODOO_API_KEY","")
-    def call(self, model, method, payload):
-        if not self.key:
-            raise RuntimeError("ODOO_API_KEY missing. JSON-2 is disabled until a key is configured.")
-        h={"Authorization":f"bearer {self.key}","Content-Type":"application/json","X-Odoo-Database":self.db}
-        r=requests.post(f"{self.base}/json/2/{model}/{method}",headers=h,json=payload,timeout=30)
-        r.raise_for_status(); return r.json()
-    def open_invoices(self):
-        return self.call("account.move","search_read",{
-          "domain":[["move_type","=","out_invoice"],["state","=","posted"],["payment_state","!=","paid"]],
-          "fields":["name","partner_id","invoice_date","invoice_date_due","amount_total","amount_residual","payment_state","currency_id"],
-          "limit":1000
-        })
+CUSTOMER #001 currently uses XML-RPC because that is what is live in the deployed
+self-hosted stack. Keep this adapter behind Finance Core and migrate to JSON-2
+before Odoo 22 compatibility becomes a requirement.
+"""
+import xmlrpc.client
+
+class OdooClient:
+    def __init__(self, url, db, login, password):
+        self.url=url.rstrip('/'); self.db=db; self.login=login; self.password=password
+        self.common=xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/common", allow_none=True)
+        self.models=xmlrpc.client.ServerProxy(f"{self.url}/xmlrpc/2/object", allow_none=True)
+        self.uid=None
+    def auth(self):
+        self.uid=self.uid or self.common.authenticate(self.db,self.login,self.password,{})
+        if not self.uid: raise RuntimeError('Odoo authentication failed')
+        return self.uid
+    def call(self, model, method, args=None, kwargs=None):
+        return self.models.execute_kw(self.db,self.auth(),self.password,model,method,args or [],kwargs or {})

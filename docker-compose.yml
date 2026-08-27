@@ -4,58 +4,33 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-finance_demo}
       POSTGRES_USER: ${POSTGRES_USER:-odoo}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo_demo_change_me}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - odoo-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo} -d ${POSTGRES_DB:-finance_demo}"]
       interval: 5s
       timeout: 5s
-      retries: 20
-
-  odoo-init:
-    image: odoo:19.0
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      HOST: db
-      USER: ${POSTGRES_USER:-odoo}
-      PASSWORD: ${POSTGRES_PASSWORD:-odoo_demo_change_me}
-    command: >
-      bash -lc "odoo -d ${ODOO_DB:-finance_demo}
-      --db_host=db --db_user=${POSTGRES_USER:-odoo} --db_password=${POSTGRES_PASSWORD:-odoo_demo_change_me}
-      -i base,account,sale_management,l10n_es --without-demo=all --stop-after-init || true"
-    restart: "no"
+      retries: 30
 
   odoo:
     image: odoo:19.0
     depends_on:
-      odoo-init:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     ports:
       - "8069:8069"
     environment:
       HOST: db
       USER: ${POSTGRES_USER:-odoo}
-      PASSWORD: ${POSTGRES_PASSWORD:-odoo_demo_change_me}
+      PASSWORD: ${POSTGRES_PASSWORD}
     command: >
       odoo -d ${ODOO_DB:-finance_demo}
-      --db_host=db --db_user=${POSTGRES_USER:-odoo} --db_password=${POSTGRES_PASSWORD:-odoo_demo_change_me}
+      --db_host=db --db_user=${POSTGRES_USER:-odoo} --db_password=${POSTGRES_PASSWORD}
       --database=${ODOO_DB:-finance_demo}
     volumes:
       - odoo-data:/var/lib/odoo
-
-  seed:
-    build: ./odoo_seed
-    depends_on:
-      - odoo
-    environment:
-      ODOO_URL: http://odoo:8069
-      ODOO_DB: ${ODOO_DB:-finance_demo}
-      ODOO_USER: ${ODOO_USER:-admin}
-      ODOO_PASSWORD: ${ODOO_PASSWORD:-admin}
-    restart: "no"
+      - ./odoo_addons:/mnt/extra-addons
 
   finance-core:
     build: ./finance_core
@@ -67,39 +42,48 @@ services:
       ODOO_URL: http://odoo:8069
       ODOO_DB: ${ODOO_DB:-finance_demo}
       ODOO_USER: ${ODOO_USER:-admin}
-      ODOO_PASSWORD: ${ODOO_PASSWORD:-admin}
-      DEMO_DATA_DIR: /app/demo_data
+      ODOO_PASSWORD: ${ODOO_PASSWORD}
       CUSTOMER_CODE: ${CUSTOMER_CODE:-CUSTOMER-001}
       CUSTOMER_NAME: ${CUSTOMER_NAME:-Mi Primer Cliente}
       FINANCE_MODE: ${FINANCE_MODE:-SHADOW}
       ERP_PROVIDER: ${ERP_PROVIDER:-odoo}
       READ_ONLY: ${READ_ONLY:-true}
-    volumes:
-      - ./demo_data:/app/demo_data:ro
+      FINANCE_AS_OF: ${FINANCE_AS_OF:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8088/health', timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
   finance-mcp:
     build: ./finance_mcp
     depends_on:
-      - finance-core
+      finance-core:
+        condition: service_healthy
     ports:
       - "8090:8090"
     environment:
       FINANCE_CORE_URL: http://finance-core:8088
       MCP_PORT: 8090
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
-#  n8n:
-#    image: n8nio/n8n:latest
-#    ports:
-#      - "5678:5678"
-#    environment:
-#      N8N_BASIC_AUTH_ACTIVE: "true"
-#      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-demo}
-#      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-demo_change_me}
-#      N8N_SECURE_COOKIE: "false"
-#    volumes:
-#      - n8n-data:/home/node/.n8n
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-finance-demo}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD}
+      N8N_SECURE_COOKIE: "false"
+    volumes:
+      - n8n-data:/home/node/.n8n
 
 volumes:
   odoo-db:
   odoo-data:
-  #n8n-data:
+  n8n-data:

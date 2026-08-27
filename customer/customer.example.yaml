@@ -1,8 +1,8 @@
 customer:
-  code: COLIBRILATAM
-  name: "Colibrí Latam"
-  legal_name: "Colibrí Latam"
-  currency: USD
+  code: CUSTOMER-001
+  name: "Mi Primer Cliente"
+  legal_name: ""
+  currency: EUR
   timezone: Europe/Madrid
   annual_credit_sales: 8000000
   minimum_cash: 250000
